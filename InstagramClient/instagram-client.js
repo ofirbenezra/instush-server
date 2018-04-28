@@ -5,8 +5,7 @@ var tag = "";
 var token = '7484048701.40116e0.346f60d6b2694139b646173871cef740',
     num_photos = 1; // maximum 20
 
-const url =
-    "https://api.instagram.com/v1/tags/stmobileapps/media/recent?&access_token=" + token;
+
 
 function recursiveGetProp(obj, lookup, callback) {
     for (property in obj) {
@@ -18,7 +17,8 @@ function recursiveGetProp(obj, lookup, callback) {
     }
 }
 var InstaClient = {
-    getProps(){
+    getProps(tag){
+        const url = `https://api.instagram.com/v1/tags/${tag}/media/recent?&access_token=` + token;
         // Return new promise
         return new Promise(function(resolve, reject) {
             // Do async job
@@ -36,13 +36,12 @@ var InstaClient = {
                     const jsonObj = JSON.parse(body);
 
                     const ImageData = jsonObj.data.map((obj) => {
-                            return {
-                                url:obj.images.standard_resolution.url,
-                                width:obj.images.standard_resolution.width,
-                                height:obj.images.standard_resolution.height,
-                            };
-                        });
-                    console.log(ImageData);
+                        return {
+                            url: obj.images.standard_resolution.url,
+                            width: obj.images.standard_resolution.width,
+                            height: obj.images.standard_resolution.height,
+                        };
+                    });
                     resolve(ImageData);
                 });
             });
