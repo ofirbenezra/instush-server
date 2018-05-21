@@ -17,8 +17,12 @@ function recursiveGetProp(obj, lookup, callback) {
     }
 }
 var InstaClient = {
-    getProps(tag){
-        const url = `https://api.instagram.com/v1/tags/${tag}/media/recent?&access_token=` + token;
+    getProps(tag,minTagId){
+        let url = `https://api.instagram.com/v1/tags/${tag}/media/recent?&access_token=` + token;
+
+        if(minTagId != -1){
+            url += '&min_tag_id=' + minTagId;
+        }
         // Return new promise
         return new Promise(function(resolve, reject) {
             // Do async job
@@ -35,13 +39,15 @@ var InstaClient = {
                     console.log(body);
                     const jsonObj = JSON.parse(body);
 
-                    const ImageData = jsonObj.data.map((obj) => {
+                    let ImageData  = { data:[], paging:{}};
+                    ImageData.data = jsonObj.data.map((obj) => {
                         return {
                             url: obj.images.standard_resolution.url,
                             width: obj.images.standard_resolution.width,
                             height: obj.images.standard_resolution.height,
                         };
                     });
+                    ImageData.paging.minTagId = jsonObj.pagination? jsonObj.pagination.min_tag_id: -1,
                     resolve(ImageData);
                 });
             });
